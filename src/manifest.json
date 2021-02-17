@@ -14,7 +14,8 @@
     "alarms",
     "identity",
     "notifications",
-    "storage"
+    "storage",
+    "tabs"
   ],
   "oauth2": {
     "client_id": "840256951321-stskg5tsvdfjcf1c5cthd6n5k54nq7q0.apps.googleusercontent.com",
@@ -33,7 +34,8 @@
       "utils.js",
       "feeds.js",
       "scheduler.js",
-      "background.js"
+      "background.js",
+      "background_ai.js"
     ]
   },
   "options_page": "options.html",
