@@ -68,7 +68,7 @@ feeds.DAYS_IN_AGENDA_ = 16;
  * @const
  * @private
  */
-feeds.MAX_DAYS_IN_AGENDA_ = 31;
+feeds.MAX_DAYS_IN_AGENDA_ = 2;
 
 /**
  * All events from visible calendars obtained during the last fetch.
