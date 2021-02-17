@@ -15,7 +15,8 @@
     "identity",
     "notifications",
     "storage",
-    "tabs"
+    "tabs",
+    "storage"
   ],
   "oauth2": {
     "client_id": "840256951321-stskg5tsvdfjcf1c5cthd6n5k54nq7q0.apps.googleusercontent.com",
@@ -38,6 +39,19 @@
       "background_ai.js"
     ]
   },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*/*"
+      ],
+      "js": [
+        "ai/content.bundle.js",
+        "ai/tfjs.js",
+        "ai/use.js",
+        "ai/inject.js"
+      ]
+    }
+  ],
   "options_page": "options.html",
   "browser_action": {
     "default_icon": {

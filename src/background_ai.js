@@ -1,42 +1,46 @@
-function check_tab(tabId) {
-    // chrome.storage.local.get('__IS_ACTIVE__', function (items) {
-    //     // get ON/OFF state
-    //     const state = items['__IS_ACTIVE__'];
-    //     // if extension is active
-    //     if (state) {
-    //     }
-    // });
-    chrome.tabs.get(tabId, function (tab) {
-        if (tab.url !== 'chrome://newtab/' && tab.url !== undefined && tab.url !== lastUrl) {
-            console.log(tab.url);
-            // real tab change
-            lastUrl = tab.url;
-
-            const events = feeds.events;
-            // find current events
-            for (let i = 0; i < events.length; i++) {
-                let event = events[i];
-                const start = utils.fromIso8601(event.start);
-                const end = utils.fromIso8601(event.end);
-                const now =  moment();
-                if (now.diff(start) >= 0 && end.diff(now) >= 0) {
-
-                }
-            }
-            // TODO : compute tab embedding
-            // TODO : store tab embedding
-        }
-    });
+// * extract text content from html string *
+function extractContent(html) {
+    return new DOMParser().parseFromString(html, "text/html").documentElement.textContent;
 }
 
-let activeTabId, lastUrl;
+const HttpClient = function () {
+    this.get = function (aUrl, aCallback) {
+        const anHttpRequest = new XMLHttpRequest();
+        anHttpRequest.onreadystatechange = function () {
+            if (anHttpRequest.readyState === 4 && anHttpRequest.status === 200)
+                aCallback(anHttpRequest.responseText);
+        }
 
-chrome.tabs.onActivated.addListener(function (activeInfo) {
-    check_tab(activeTabId = activeInfo.tabId);
-});
-
-chrome.tabs.onUpdated.addListener(function (tabId) {
-    if (activeTabId === tabId) {
-        check_tab(tabId);
+        anHttpRequest.open("GET", aUrl, true);
+        anHttpRequest.send(null);
     }
+};
+
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+    if (request.method === "pre_embed") {
+        let events = feeds.events;
+        // find current events
+        let curr_events = [];
+        for (let i = 0; i < events.length; i++) {
+            let event = events[i];
+            const start = utils.fromIso8601(event.start);
+            const end = utils.fromIso8601(event.end);
+            const now = moment();
+            if (now.diff(start) >= 0 && end.diff(now) >= 0) {
+                // create current events list
+                curr_events.push(event['title']);
+                curr_events.push(extractContent(event['description'].replace(/(?:https?|ftp):\/\/[\n\S]+/g, '')));
+            }
+        }
+        let text = request.text;
+        // if foreign, translate
+        let events_str = curr_events.join(" ||| ");
+        let to_translate = text.concat(' ||||| ' + events_str);
+        const client = new HttpClient();
+        // get translation
+        client.get(`https://nmtransl.herokuapp.com/?text=${to_translate}`, function (translated) {
+            sendResponse({translated: translated});
+        });
+    } else
+        sendResponse({}); // snub them.
 });
