@@ -75,6 +75,7 @@ browseraction.SHORTCUT_OPEN_QUICK_ADD = 'a';
  */
 browseraction.initialize = function() {
   chrome.extension.getBackgroundPage().background.log('browseraction.initialize()');
+  // BITE
   browseraction.fillMessages_();
   browseraction.installButtonClickHandlers_();
   browseraction.installKeydownHandlers_();
